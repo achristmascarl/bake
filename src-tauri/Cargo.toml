@@ -6,7 +6,7 @@ authors = ["you"]
 edition = "2021"
 
 [profile.dev]
-incremental = true # Compile your binary in smaller steps.
+incremental = true
 
 [profile.release]
 codegen-units = 1 # Allows LLVM to perform better optimization.

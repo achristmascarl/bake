@@ -14,7 +14,8 @@ Cargo.lock
 *.pdb
 
 # svelte
-node_modules/
+**/node_modules/
+**/.svelte-kit/*
 
 # mac
 .DS_Store
