@@ -1,12 +1,13 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
   import Fuse from "fuse.js";
+  import type { Recipe } from "../lib/recipe";
 
   let { closeCmdModal }: { closeCmdModal: () => void } = $props();
   let searchValue = $state("");
-  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  let recipeList: Recipe[] = $state([]);
 
-  const exampleValues = [
+  const exampleValues: Recipe[] = [
     {
       name: "test",
       description: "hello world",
@@ -14,8 +15,13 @@
       tags: ["test", "hello", "world"],
     },
   ];
+
   const fuse = new Fuse(exampleValues, {
     keys: ["name", "description", "icon", "tags"],
+  });
+
+  $effect(() => {
+    recipeList = fuse.search(searchValue).map((result) => result.item);
   });
 
   function autofocus(element: HTMLElement) {
@@ -34,6 +40,7 @@
   ></button>
   <div
     class="mx-auto mt-10 z-10 w-96 h-auto max-h-96 rounded-lg border border-gray-300 bg-white dark:bg-black dark:border-gray-600 dark:text-white p-2 shadow-md"
+    onblur={closeCmdModal}
   >
     <input
       value={searchValue}
@@ -44,6 +51,20 @@
       class="w-full focus:outline-none"
       use:autofocus
     />
-    <div>test</div>
+    {#if recipeList.length}
+      <ul class="mt-2">
+        {#each recipeList as recipe}
+          <li class="flex items-center space-x-2">
+            <span class="text-lg">{recipe.icon}</span>
+            <div>
+              <p class="font-semibold">{recipe.name}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                {recipe.description}
+              </p>
+            </div>
+          </li>
+        {/each}
+      </ul>
+    {/if}
   </div>
 </main>
