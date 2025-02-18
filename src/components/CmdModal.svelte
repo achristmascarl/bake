@@ -1,18 +1,31 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
   import Fuse from "fuse.js";
-  import type { Recipe } from "../lib/recipe";
+  import { error, info } from "@tauri-apps/plugin-log";
+  import { onMount } from "svelte";
+  import { commands, type Recipe } from "../bindings";
 
   let { closeCmdModal }: { closeCmdModal: () => void } = $props();
   let searchValue = $state("");
   let recipeList: Recipe[] = $state([]);
 
+  onMount(async () => {
+    const res = await commands.listRecipes();
+    if (res.status === "error") {
+      error(res.error);
+    } else {
+      info(res.data.join(", "));
+    }
+  });
+
   const exampleValues: Recipe[] = [
     {
+      id: "test",
       name: "test",
       description: "hello world",
       icon: "test",
       tags: ["test", "hello", "world"],
+      bias: null,
     },
   ];
 
@@ -30,7 +43,7 @@
 </script>
 
 <main
-  transition:fade={{ duration: 100 }}
+  transition:fade={{ duration: 75 }}
   class="absolute inset-0 w-full h-full z-10 flex flex-col"
 >
   <button
