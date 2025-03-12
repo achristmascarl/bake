@@ -36,7 +36,7 @@
   on:keyup={handleKeyDown}
   on:resize={() => monacoEditor.layout()}
 />
-<main class={`relative w-full h-full ${className}`}>
+<main class={`relative w-full h-full bg-transparent ${className}`}>
   {#if cmdModalOpen}
     <CmdModal closeCmdModal={() => (cmdModalOpen = false)} />
   {/if}

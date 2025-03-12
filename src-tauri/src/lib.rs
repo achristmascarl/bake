@@ -16,9 +16,16 @@ pub struct Recipe {
 #[tauri::command]
 #[specta::specta]
 fn list_recipes(app_handle: tauri::AppHandle) -> Result<Vec<Recipe>, String> {
-  let resource_dir = app_handle.path().resolve("", BaseDirectory::Resource).map_err(|e| e.to_string())?;
+  let resource_dir = app_handle.path().resolve("recipes/", BaseDirectory::Resource).map_err(|e| e.to_string())?;
   log::info!("Resource directory: {:?}", resource_dir);
   let files = std::fs::read_dir(resource_dir).map_err(|e| e.to_string())?;
+  for f in files {
+    log::info!("File: {:?}", f);
+    if let Ok(file) = f {
+      log::info!("File name: {:?}", file.file_name());
+    }
+  }
+
   // let recipes = vec![];
   // files.map(|f| {
   //
@@ -27,9 +34,18 @@ fn list_recipes(app_handle: tauri::AppHandle) -> Result<Vec<Recipe>, String> {
   Ok(vec![])
 }
 
+#[tauri::command]
+#[specta::specta]
+fn show_main_window(app_handle: tauri::AppHandle) {
+  let window = app_handle.get_webview_window("main");
+  if let Some(w) = window {
+    w.show().map_err(|e| log::error!("Failed to show window: {:?}", e)).ok();
+  }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  let builder = Builder::<tauri::Wry>::new().commands(collect_commands![list_recipes]);
+  let builder = Builder::<tauri::Wry>::new().commands(collect_commands![list_recipes, show_main_window]);
 
   #[cfg(debug_assertions)]
   builder.export(Typescript::default(), "../src/bindings.ts").expect("Failed to export typescript bindings");

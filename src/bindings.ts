@@ -12,6 +12,9 @@ async listRecipes() : Promise<Result<Recipe[], string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async showMainWindow() : Promise<void> {
+    await TAURI_INVOKE("show_main_window");
 }
 }
 
